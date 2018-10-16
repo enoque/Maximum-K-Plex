@@ -3,6 +3,23 @@
 #define debug printf ("Chegou aqui!\n");
 #define N 6
 #define K 2
+#define llu long long unsigned
+#define lu long unsigned
+#define lld long long int
+#define ii pair<int, int>
+#define x first
+#define y second
+#define pb(x) push_back(x)
+#define go(i,n) for (int i = 0; i < (int)n; i++)
+#define vi vector <int>
+#define vii vector <ii>
+#define INF 0x3f3f3f3f
+#define ff first
+#define ss second
+#define dd pair<double, double>
+#define ms(v, x) memset(v, x, sizeof(v))
+#define li list<int>
+
 using namespace std;
 
 vector <vi> grafo;
@@ -98,8 +115,74 @@ void coloca_vertice_na_cor (int c, int v){
 	
 	cores[c][v] = 1;
 	vizinhos[v] = contador;
-	
 }
+
+int s_max = 0;
+
+
+li make_satured_list(li U, vi &nncnt, li s){
+	int u = s.back();
+	s.pop_back();
+	li SL;
+	
+	for (int v : s){
+		if (!grafo[u][v]){
+			nncnt[v]++;
+		}
+	}
+	
+	for (int v : U){
+		if (!grafo[u][v]) nncnt[v]++;
+	}
+	
+	for (int v : s){
+		if (nncnt[v] == K-1){
+			SL.push_back(v);
+		}
+	}
+	return SL;
+}
+
+
+bool isPlex(li SL, int v){
+	for (int u : SL){
+		if (!grafo[u][v]) return false;
+	}
+	return true;
+}
+
+
+li generation (li U, vi &nncnt, li s){
+	li R;
+	li SL = make_satured_list(U, nncnt, s);
+	for (int v : U){
+		if (nncnt[v] > K-1) continue;
+		if (isPlex(SL, v)){
+			R.push_back(v);
+		}
+	}
+	return R;
+}
+
+
+
+
+void basic_plex(li s, li U, vi nncnt){
+	if ((int)s.size() > s_max) s_max = s.size();
+	
+	while (U.size()){
+		if (U.size() + s.size() <= (lu) s_max) return;
+		int v = U.back();
+		U.pop_back();
+		s.push_back(v);
+		vi newNncnt = nncnt;
+		U = generation(U, newNncnt, s);
+		basic_plex(s,U, newNncnt);
+		s.pop_back();
+	}
+}
+
+
 
 //Complexidade O(n*n*n) 
 //Complexidade O(n*n*k)
