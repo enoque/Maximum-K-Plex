@@ -228,11 +228,10 @@ li limite_superior;
 void gera_limite(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
 	for (vi x : cores)
 		for (int &xx : x) xx = 0;
-	
-	co_k_coloaracao(matrizAdj, pertence_ao_grafo);
-	limite_superior.clear();
 	ordem.clear();
 	vizinhos.clear();
+	co_k_coloaracao(matrizAdj, pertence_ao_grafo);
+	limite_superior.clear();
 	int set[N+1];
 	ms(set,0);
 	int UB = 0;
