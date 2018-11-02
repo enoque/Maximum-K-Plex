@@ -35,10 +35,15 @@ typedef struct Solucao{
 }Solucao;
 
 void inicializa(){
+	
 	grafo.resize(N+1);
+	
 	cores.resize(N+1);
+	
 	vizinhos.resize(N+1);
+	
 	tamanhoCores.resize(N+1);
+	
 	for (int i = 0; i <= N; i++){
 		cores[i].resize(N+1);
 	}
@@ -92,13 +97,17 @@ void inicializa(){
 //Complexidade O(n)
 //Complexidade com lista será O(k)
 
+/*
+Esta função testa se o vertice v pode receber a cor c no grafo representando
+pela matrizAdj.
+Para cada vertice i na cor c que eh vizinho de v, verificamos se 
+o numero de vizinhos do vertice i na cor c é menor  K-1.
+ 
+*/
 bool pode_entrar (int c, int v, int matrizAdj[N+1][N+1]){
-	//bool flag = false;
-	//if (v == 6 && c == 1) flag = true;
 	for (int i = 0; i < (int) cores[c].size(); i++){
 		if (cores[c][i]){
 			if (matrizAdj[v][i]){
-				//if (flag) printf ("u = %d\n", i);
 				if (vizinhos[i] >= K-1){
 					return false;
 				}
@@ -108,6 +117,10 @@ bool pode_entrar (int c, int v, int matrizAdj[N+1][N+1]){
 	return true;
 }
 
+/*
+Esta funcao coloca o vertice v na cor c. Alem disso, atualiza o vetor
+vizinhos para todo vertice na cor c que são vizinhos de v.
+*/
 
 void coloca_vertice_na_cor (int c, int v, int matrizAdj[N+1][N+1]){
 	
@@ -126,6 +139,35 @@ void coloca_vertice_na_cor (int c, int v, int matrizAdj[N+1][N+1]){
 }
 
 int s_max = 0;
+
+/*
+
+Esta funcao recebe a matriz de Adjacência e um vetor caracteristico 
+do vertices de um subgrafo. Devolve um vector de vi representando uma 
+co-k-coloracao.
+*/
+
+//Complexidade O(n*n*n) 
+
+vector<vi> co_k_coloaracao(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
+	for (int i = 1; i <= N; i++){
+		for (int c = 0; c < N; c++){
+			if (pode_entrar(c,i, matrizAdj) && pertence_ao_grafo[i]){
+				//printf ("c = %d v = %d\n", c, i);
+				coloca_vertice_na_cor(c,i, matrizAdj);
+				tamanhoCores[c]++;
+				break;
+			}
+		}
+	}
+	//printf("qtd = %lu\n", cores.size());
+	return cores;
+}
+
+
+/*
+
+*/
 
 
 li make_satured_list(li U, vi &nncnt, li s, int grafo[N+1][N+1]){
@@ -203,23 +245,6 @@ void basic_plex(li s, li U, vi nncnt){
 */
 
 
-//Complexidade O(n*n*n) 
-//Complexidade O(n*n*k)
-
-vector<vi> co_k_coloaracao(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
-	for (int i = 1; i <= N; i++){
-		for (int c = 0; c < N; c++){
-			if (pode_entrar(c,i, matrizAdj) && pertence_ao_grafo[i]){
-				//printf ("c = %d v = %d\n", c, i);
-				coloca_vertice_na_cor(c,i, matrizAdj);
-				tamanhoCores[c]++;
-				break;
-			}
-		}
-	}
-	//printf("qtd = %lu\n", cores.size());
-	return cores;
-}
 
 li ordem;
 li limite_superior;
