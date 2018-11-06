@@ -2,7 +2,7 @@
 #define vi vector <int>
 #define debug printf ("Chegou aqui!\n");
 #define N 6
-#define K 2
+#define K 3
 #define llu long long unsigned
 #define lu long unsigned
 #define lld long long int
@@ -92,7 +92,28 @@ void inicializa(){
 	matrizAdj[1][4] = 1;
 	matrizAdj[4][1] = 1;
 	
+	matrizAdj[2][4] = 1;
+	matrizAdj[4][2] = 1;
+	matrizAdj[5][2] = 1;
+	matrizAdj[2][5] = 1;
+	
+	
 }
+
+
+bool pertence (li s, int v){
+	for (int x : s)
+		if (x == v) return true;
+		
+	return false;
+}
+
+
+
+
+
+
+
 
 //Complexidade O(n)
 //Complexidade com lista será O(k)
@@ -104,6 +125,11 @@ Para cada vertice i na cor c que eh vizinho de v, verificamos se
 o numero de vizinhos do vertice i na cor c é menor  K-1.
  
 */
+
+
+
+
+
 bool pode_entrar (int c, int v, int matrizAdj[N+1][N+1]){
 	for (int i = 0; i < (int) cores[c].size(); i++){
 		if (cores[c][i]){
@@ -171,28 +197,54 @@ vector<vi> co_k_coloaracao(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
 
 
 li make_satured_list(li U, vi &nncnt, li s, int grafo[N+1][N+1]){
-	printf("#########\n");
+	printf("!!!!!!!!!!!!!!!!\n");
+	for (int x : U)
+		printf("%d ", x);
+	printf("\n");
 	int u = s.back();
+	//printf("u = %d\n", u);
 	s.pop_back();
+	if (u == 0){
+		return list<int>();
+	}
 	li SL;
 	
 	for (int v : s){
-		if (!grafo[u][v]){
+		if (!matrizAdj[u][v]){
 			nncnt[v]++;
 		}
 	}
 	
 	for (int v : U){
-		if (!grafo[u][v]) nncnt[v]++;
+		if (!matrizAdj[u][v] && u != v) nncnt[v]++;
 	}
 	
 	for (int v : s){
 		//printf("%d = %d\n", v, nncnt[v]);
-		if (nncnt[v] == K-1){
+		if (nncnt[v] == K-1 && v != 0){
 			SL.push_back(v);
 		}
+		
 	}
-	//printf("saiu = %lu\n", SL.size());
+	/*printf ("SOLUCAO = ");
+	for (int x : s) printf("%d ", x);
+	printf("\n");
+	
+	printf ("VETOR = ");
+	for (int x : nncnt) printf("%d ", x);
+	printf("\n");
+	printf("saiu = %lu\n", SL.size());*/
+	printf("SL\n");
+	for (int x : SL)
+		printf("%d ", x);
+	printf("\n");
+	
+	if (u == 4){
+		printf("NNCNT do 4!!\n");
+		for (int x : nncnt)
+			printf("%d ", x);
+		printf("\n");
+	}
 	return SL;
 }
 
@@ -203,7 +255,7 @@ bool isPlex(li SL, int v, int grafo[N+1][N+1]){
 	//printf("\n");
 	
 	for (int u : SL){
-		if (!grafo[u][v]) {debug;return false;}
+		if (!matrizAdj[u][v]) {return false;}
 	}
 	return true;
 }
@@ -211,39 +263,40 @@ bool isPlex(li SL, int v, int grafo[N+1][N+1]){
 
 li generation (li U, vi &nncnt, li s, int grafo[N+1][N+1]){
 	li R;
-	li SL = make_satured_list(U, nncnt, s,grafo);
+	li SL = make_satured_list(U, nncnt, s,matrizAdj);
+	//printf("tam list = %lu\n", U.size());
+	//for (int u : U) printf("%d ", u);
+	//printf("\n");
+	/*printf("tam SL = %lu   s = %lu\n", SL.size(), s.size());
+	printf("SL\n");
+	for (int x : SL)
+		printf("%d ", x);
+	printf("\n");
+	printf("s\n");
+	for (int x : s)
+		printf("%d ", x);
+	printf("\n");
+	*/
+	printf("###################\n");
+	for (int v : nncnt)
+		printf("%d ", v);
+	printf("\n");
+	printf("terminou nncnt pro %d\n", s.back());
 	for (int v : U){
-		if (nncnt[v] > K-1){ continue;}
-		if (isPlex(SL, v, grafo)){
+		//printf("%d ", v);
+		if (nncnt[v] > K-1){ printf("Entrou com %d  adicionando o %d\n", v, s.back()); continue;}
+		if (isPlex(SL, v, matrizAdj)){
 			R.push_back(v);
 		}
 		else{
-			printf("x\n");
-			debug;
+			//printf("x\n");
+			//debug;
 		}
 	}
+	printf("\n");
+	//printf("tam gerado = %lu\n", R.size());
 	return R;
 }
-
-
-
-/*
-void basic_plex(li s, li U, vi nncnt){
-	if ((int)s.size() > s_max) s_max = s.size();
-	
-	while (U.size()){
-		if (U.size() + s.size() <= (lu) s_max) return;
-		int v = U.back();
-		U.pop_back();
-		s.push_back(v);
-		vi newNncnt = nncnt;
-		U = generation(U, newNncnt, s);
-		basic_plex(s,U, newNncnt);
-		s.pop_back();
-	}
-}
-*/
-
 
 
 li ordem;
@@ -257,6 +310,7 @@ void gera_limite(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
 	vizinhos.clear();
 	co_k_coloaracao(matrizAdj, pertence_ao_grafo);
 	limite_superior.clear();
+	tamanhoCores.clear();
 	int set[N+1];
 	ms(set,0);
 	int UB = 0;
@@ -305,21 +359,43 @@ void gera_limite(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
 	//printf ("vizinhos = %d\n", vizinhos[2]);
 	//printf ("tamanho = %d\n", tamanhoCores[0]);
 }
+bool flag = false;
 
-void basic_plex_with_limite(li s, Solucao U, vi nncnt){
-	if ((int)s.size() > s_max) s_max = s.size();
-	
+void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
+	//printf("CHEGOU COM %lu!!\n", s.size());
+	if (flag) return;
+	if ((int)s.size() > s_max) {
+		s_max = s.size();
+		printf("resposta!! cont = %d\n", cont);
+		for (int x : s)
+			printf("%d ", x);
+		printf("\n");
+		//if (s.size() == 3) cont = 2;
+	}
+	//if (U.s.size() == 0) return;
+	ms(U.vertices,0);
+	for (int x : U.s) U.vertices[x] = 1;
 	gera_limite(U.matrizAdj, U.vertices);
 	U.s = ordem;
+	if (cont == 200){
+		printf("tam ordem = %lu  s = %lu\n", ordem.size(), s.size());
+		for (int x : ordem) printf("%d ", x);
+		printf("\n");
+		printf("tam ordemXX = %lu  s = %lu\n", ordem.size(), s.size());
+		for (int x : s) printf("%d ", x);
+		printf("\n");
+	}
 	li limiteVertices = limite_superior;
 	
-	cout << U.s.size() << endl;
-	for (int u : nncnt) printf("%d ", u);
-	printf("\n");
+	//cout << U.s.size() << endl;
+	//for (int u : nncnt) printf("%d ", u);
+	//printf("\n");
 	
 	
-	
+	//printf("novo\n");
 	while (U.s.size()){
+		if(flag) return;
+		//flag = true;
 		//printf("size U = %lu\n", U.s.size());
 		//printf("TAM = %lu  s_max = %d\n", U.s.size(), s_max);
 		if (U.s.size() + s.size() <= (lu) s_max) return;
@@ -327,26 +403,46 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt){
 		int limite = limiteVertices.back();
 		if (limite + (int)s.size() <= s_max) return;
 		U.s.pop_back();
-		for (int i = 1; i <= N; i++){
+		/*for (int i = 1; i <= N; i++){
 			if (matrizAdj[v][i]) U.matrizAdj[i][v] = 0;
 			U.matrizAdj[v][i] = 0;
-		}
+		}*/
 		U.vertices[v] = 0;
-		s.push_back(v);
+		//s.push_back(v);
 		vi newNncnt = nncnt;
 		Solucao newU = U;
-		newU.s.clear();
-		newU.s = generation(U.s, newNncnt, s, U.matrizAdj);
-		printf("Antigo U = %lu  novo = %lu\n", U.s.size(), newU.s.size());
+		li newS = s;
+		newS.push_back(v);
+		newU.s = generation(U.s, newNncnt, newS, U.matrizAdj);
+		printf("Antigo U = %lu  novo = %lu  vertice_tirado = %d  cont = %d\n", U.s.size(), newU.s.size(), v, cont);
+		if (cont == 1 && v == 4){
+			//flag = true;
+			printf("#######\n");
+			for (int x : newU.s)
+				printf("%d ", x);
+			printf("\n");
+			printf("diff!\n");
+			for (int x : nncnt)
+				printf("%d ", x);
+			printf("\n");
+			//printf("diff!\n");
+			for (int x : newNncnt)
+				printf("%d ", x);
+			printf("\n");
+			//return;
+		}
 		//printf("s1 = %lu\n", s.size());
 		
 		//printf("newU = %lu\n", newU.s.size());	
 		//printf("####\n");
-		basic_plex_with_limite(s, newU, newNncnt);
-		s.pop_back();
+		//printf("tamNewS = %lu\n", newS.size());
+		basic_plex_with_limite(newS, newU, newNncnt, cont+1);
+		//s.pop_back();
+		
 		//printf("s2 = %lu\n", s.size());
 		//basic_plex(s,U, newNncnt);
 		//s.pop_back();
+		
 	}
 }
 
@@ -354,6 +450,7 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt){
 int main (){
 	inicializa();
 	li s;
+	s.push_back(0);
 	Solucao U;
 	for (int i = 1; i <= N; i++){
 		U.vertices[i] = 1;
@@ -361,11 +458,14 @@ int main (){
 			U.matrizAdj[i][j] = matrizAdj[i][j];
 		}
 	}
+	for (int i = 1; i <= N; i++){
+		U.s.push_back(i);
+	}
 	s_max = 0;
 	vi x;
 	x.resize(N+1, 0);
-	basic_plex_with_limite(s,U,x);
+	basic_plex_with_limite(s,U,x, 0);
 	//gera_limite();
-	printf("ans = %d\n", s_max);
+	printf("ans = %d\n", s_max-1);
 	return 0;
 }
