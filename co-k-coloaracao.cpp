@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define vi vector <int>
 #define debug printf ("Chegou aqui!\n");
-#define N 300
+#define N 5000
 #define K 3
 #define llu long long unsigned
 #define lu long unsigned
@@ -511,10 +511,10 @@ int main (){
 	FILE *arquivo;
 	
 	n = 6;
-	arquivo = fopen("brock200_1.clq", "r");
+	arquivo = fopen("entradas/brock200_1.clq", "r");
 	readFile(arquivo, n, m);
 	inicializa();
-	
+	printf("\n\n\n\n\n\n\n\n");
 	li s;
 	s.push_back(0);
 	Solucao U;

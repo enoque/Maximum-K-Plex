@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define vi vector <int>
 #define debug printf ("Chegou aqui!\n");
-#define N 300
+#define N 5000
 #define K 2
 #define llu long long unsigned
 #define lu long unsigned
@@ -350,7 +350,6 @@ bool flag = false;
 
 void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
 	//printf("CHEGOU COM %lu!!\n", s.size());
-	if (flag) return;
 	if ((int)s.size() > s_max) {
 		s_max = s.size();
 		printf("resposta atual = %lu  achado no tempo = %lf\n", s.size(), ((double) (clock() - clk)) / CLOCKS_PER_SEC);
@@ -358,6 +357,10 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
 			//printf("%d ", x);
 		//printf("\n");
 		//if (s.size() == 3) cont = 2;
+	}
+	if ((int) (clock() - clk) / CLOCKS_PER_SEC > timeout){
+		flag = true;
+		return;
 	}
 	//if (U.s.size() == 0) return;
 	ms(U.vertices,0);
