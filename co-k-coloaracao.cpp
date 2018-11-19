@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define vi vector <int>
 #define debug printf ("Chegou aqui!\n");
-#define N 6
+#define N 300
 #define K 3
 #define llu long long unsigned
 #define lu long unsigned
@@ -19,6 +19,7 @@
 #define dd pair<double, double>
 #define ms(v, x) memset(v, x, sizeof(v))
 #define li list<int>
+clock_t clk;
 using namespace std;
 
 vector <vi> grafo;
@@ -26,11 +27,10 @@ vector <vi> cores;
 vi tamanhoCores;
 vi vizinhos;
 int matrizAdj[N+1][N+1];
-
+int n,m;
 
 typedef struct Solucao{
 	li s;
-	int matrizAdj[N+1][N+1];
 	int vertices[N+1];
 }Solucao;
 
@@ -49,6 +49,7 @@ void inicializa(){
 	}
 	
 	
+	/*
 	grafo[1].push_back(2);
 	grafo[1].push_back(3);
 	grafo[1].push_back(6);
@@ -96,7 +97,7 @@ void inicializa(){
 	matrizAdj[4][2] = 1;
 	matrizAdj[5][2] = 1;
 	matrizAdj[2][5] = 1;
-	
+	*/
 	
 }
 
@@ -130,7 +131,7 @@ o numero de vizinhos do vertice i na cor c é menor  K-1.
 
 
 
-bool pode_entrar (int c, int v, int matrizAdj[N+1][N+1]){
+bool pode_entrar (int c, int v){
 	for (int i = 0; i < (int) cores[c].size(); i++){
 		if (cores[c][i]){
 			if (matrizAdj[v][i]){
@@ -148,7 +149,7 @@ Esta funcao coloca o vertice v na cor c. Alem disso, atualiza o vetor
 vizinhos para todo vertice na cor c que são vizinhos de v.
 */
 
-void coloca_vertice_na_cor (int c, int v, int matrizAdj[N+1][N+1]){
+void coloca_vertice_na_cor (int c, int v){
 	
 	int contador = 0;
 	for (int i = 0; i < (int) cores[c].size(); i++){
@@ -175,12 +176,13 @@ co-k-coloracao.
 
 //Complexidade O(n*n*n) 
 
-vector<vi> co_k_coloaracao(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
-	for (int i = 1; i <= N; i++){
-		for (int c = 0; c < N; c++){
-			if (pode_entrar(c,i, matrizAdj) && pertence_ao_grafo[i]){
+vector<vi> co_k_coloaracao(int pertence_ao_grafo[N+1]){
+	for (int i = 1; i <= n; i++){
+		if (!pertence_ao_grafo[i]) continue;
+		for (int c = 0; c < n; c++){
+			if (pode_entrar(c,i) && pertence_ao_grafo[i]){
 				//printf ("c = %d v = %d\n", c, i);
-				coloca_vertice_na_cor(c,i, matrizAdj);
+				coloca_vertice_na_cor(c,i);
 				tamanhoCores[c]++;
 				break;
 			}
@@ -196,11 +198,7 @@ vector<vi> co_k_coloaracao(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
 */
 
 
-li make_satured_list(li U, vi &nncnt, li s, int grafo[N+1][N+1]){
-	printf("!!!!!!!!!!!!!!!!\n");
-	for (int x : U)
-		printf("%d ", x);
-	printf("\n");
+li make_satured_list(li U, vi &nncnt, li s){
 	int u = s.back();
 	//printf("u = %d\n", u);
 	s.pop_back();
@@ -234,22 +232,13 @@ li make_satured_list(li U, vi &nncnt, li s, int grafo[N+1][N+1]){
 	for (int x : nncnt) printf("%d ", x);
 	printf("\n");
 	printf("saiu = %lu\n", SL.size());*/
-	printf("SL\n");
-	for (int x : SL)
-		printf("%d ", x);
-	printf("\n");
 	
-	if (u == 4){
-		printf("NNCNT do 4!!\n");
-		for (int x : nncnt)
-			printf("%d ", x);
-		printf("\n");
-	}
+	
 	return SL;
 }
 
 
-bool isPlex(li SL, int v, int grafo[N+1][N+1]){
+bool isPlex(li SL, int v){
 	//printf("tam = %lu\n", SL.size());
 	//for (int u: grafo[v]) printf("x%d ", u);
 	//printf("\n");
@@ -261,9 +250,9 @@ bool isPlex(li SL, int v, int grafo[N+1][N+1]){
 }
 
 
-li generation (li U, vi &nncnt, li s, int grafo[N+1][N+1]){
+li generation (li U, vi &nncnt, li s){
 	li R;
-	li SL = make_satured_list(U, nncnt, s,matrizAdj);
+	li SL = make_satured_list(U, nncnt, s);
 	//printf("tam list = %lu\n", U.size());
 	//for (int u : U) printf("%d ", u);
 	//printf("\n");
@@ -277,15 +266,10 @@ li generation (li U, vi &nncnt, li s, int grafo[N+1][N+1]){
 		printf("%d ", x);
 	printf("\n");
 	*/
-	printf("###################\n");
-	for (int v : nncnt)
-		printf("%d ", v);
-	printf("\n");
-	printf("terminou nncnt pro %d\n", s.back());
 	for (int v : U){
 		//printf("%d ", v);
-		if (nncnt[v] > K-1){ printf("Entrou com %d  adicionando o %d\n", v, s.back()); continue;}
-		if (isPlex(SL, v, matrizAdj)){
+		if (nncnt[v] > K-1){continue;}
+		if (isPlex(SL, v)){
 			R.push_back(v);
 		}
 		else{
@@ -293,7 +277,7 @@ li generation (li U, vi &nncnt, li s, int grafo[N+1][N+1]){
 			//debug;
 		}
 	}
-	printf("\n");
+	//printf("\n");
 	//printf("tam gerado = %lu\n", R.size());
 	return R;
 }
@@ -303,12 +287,12 @@ li ordem;
 li limite_superior;
 	
 
-void gera_limite(int matrizAdj[N+1][N+1], int pertence_ao_grafo[N+1]){
-	for (vi x : cores)
+void gera_limite(int pertence_ao_grafo[N+1]){
+	for (vi &x : cores)
 		for (int &xx : x) xx = 0;
 	ordem.clear();
 	vizinhos.clear();
-	co_k_coloaracao(matrizAdj, pertence_ao_grafo);
+	co_k_coloaracao(pertence_ao_grafo);
 	limite_superior.clear();
 	tamanhoCores.clear();
 	int set[N+1];
@@ -366,25 +350,28 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
 	if (flag) return;
 	if ((int)s.size() > s_max) {
 		s_max = s.size();
-		printf("resposta!! cont = %d\n", cont);
-		for (int x : s)
-			printf("%d ", x);
-		printf("\n");
+		printf("resposta atual = %lu  achado no tempo = %lf\n", s.size(), ((double) (clock() - clk)) / CLOCKS_PER_SEC);
+		//for (int x : s)
+			//printf("%d ", x);
+		//printf("\n");
 		//if (s.size() == 3) cont = 2;
 	}
 	//if (U.s.size() == 0) return;
 	ms(U.vertices,0);
 	for (int x : U.s) U.vertices[x] = 1;
-	gera_limite(U.matrizAdj, U.vertices);
+	gera_limite(U.vertices);
 	U.s = ordem;
-	if (cont == 200){
+	//for (int x : ordem)
+	//	printf("%d ", x);
+	//printf("\n");
+	/*if (cont == 200){
 		printf("tam ordem = %lu  s = %lu\n", ordem.size(), s.size());
 		for (int x : ordem) printf("%d ", x);
 		printf("\n");
 		printf("tam ordemXX = %lu  s = %lu\n", ordem.size(), s.size());
 		for (int x : s) printf("%d ", x);
 		printf("\n");
-	}
+	}*/
 	li limiteVertices = limite_superior;
 	
 	//cout << U.s.size() << endl;
@@ -413,24 +400,24 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
 		Solucao newU = U;
 		li newS = s;
 		newS.push_back(v);
-		newU.s = generation(U.s, newNncnt, newS, U.matrizAdj);
-		printf("Antigo U = %lu  novo = %lu  vertice_tirado = %d  cont = %d\n", U.s.size(), newU.s.size(), v, cont);
-		if (cont == 1 && v == 4){
+		newU.s = generation(U.s, newNncnt, newS);
+		//printf("Antigo U = %lu  novo = %lu  vertice_tirado = %d  cont = %d\n", U.s.size(), newU.s.size(), v, cont);
+		/*if (cont == 1 && v == 4){
 			//flag = true;
-			printf("#######\n");
-			for (int x : newU.s)
-				printf("%d ", x);
-			printf("\n");
-			printf("diff!\n");
-			for (int x : nncnt)
-				printf("%d ", x);
-			printf("\n");
+			//printf("#######\n");
+			//for (int x : newU.s)
+				//printf("%d ", x);
+			//printf("\n");
+			//printf("diff!\n");
+			//for (int x : nncnt)
+				//printf("%d ", x);
+			//printf("\n");
 			//printf("diff!\n");
 			for (int x : newNncnt)
 				printf("%d ", x);
 			printf("\n");
 			//return;
-		}
+		}*/
 		//printf("s1 = %lu\n", s.size());
 		
 		//printf("newU = %lu\n", newU.s.size());	
@@ -446,26 +433,111 @@ void basic_plex_with_limite(li s, Solucao U, vi nncnt, int cont){
 	}
 }
 
+int readFile(FILE * graphFile, int & n, int  & m) {
+	char type  = ' ';
+	char linestr[1024];
+	char * datastr;
+	long i, j;
+	int nedges;
+
+	while (type != 'p') {
+		type = fgetc(graphFile);
+		if (type != EOF) {
+			/* header */
+			if (type == 'c') {
+				datastr = fgets(linestr, 1024, graphFile);
+				if (datastr == NULL)
+					return -1;
+			}
+
+			/* Vertices */
+			if (type == 'p') {
+				datastr = fgets(linestr, 1024, graphFile);
+				if (datastr == NULL)
+					return -1;
+
+				datastr = strtok(linestr," ");
+
+				datastr = strtok(NULL," ");
+				n = atoi(datastr);
+
+				datastr = strtok(NULL," ");
+				m = atoi(datastr);
+
+			}
+		}
+	}
+
+	printf("Graph with %d vertices and %d edges density %f\n", n, m, (double)(2*m)/(n*(n-1)) );
+
+
+  	nedges = 0;
+	type = fgetc(graphFile);
+	while (type != EOF) {
+		/* Edges */
+		if (type == 'e') {
+			datastr = fgets(linestr, 100, graphFile);
+
+
+			if (datastr == NULL)
+				return -1;
+
+			datastr = strtok(linestr," ");
+			i = atol(datastr) - 1;
+
+			datastr = strtok(NULL," ");
+			j = atol(datastr) - 1;
+
+			//printf("edge %d %d\n", i , j);
+
+
+
+  			if( i != j ){
+				nedges++;
+				matrizAdj[i][j] = 1;
+				matrizAdj[j][i] = 1;
+
+				}
+
+		}
+		type = fgetc(graphFile);
+	}
+
+	return 0;
+}
+
 
 int main (){
+	FILE *arquivo;
+	
+	n = 6;
+	arquivo = fopen("brock200_1.clq", "r");
+	readFile(arquivo, n, m);
 	inicializa();
+	
 	li s;
 	s.push_back(0);
 	Solucao U;
-	for (int i = 1; i <= N; i++){
+	/*for (int i = 1; i <= N; i++){
 		U.vertices[i] = 1;
 		for (int j = 0; j <= N; j++){
 			U.matrizAdj[i][j] = matrizAdj[i][j];
 		}
-	}
-	for (int i = 1; i <= N; i++){
+	}*/
+	for (int i = 1; i <= n; i++){
 		U.s.push_back(i);
 	}
+	
 	s_max = 0;
 	vi x;
 	x.resize(N+1, 0);
+	clk = clock();
 	basic_plex_with_limite(s,U,x, 0);
+	
+	printf("tempo gasto = %10lf\n", ((double) (clock() - clk)) / CLOCKS_PER_SEC);
+	
+	
 	//gera_limite();
-	printf("ans = %d\n", s_max-1);
+	printf("Maior k-plex = %d\n", s_max-1);
 	return 0;
 }
