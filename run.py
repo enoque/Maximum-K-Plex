@@ -102,6 +102,7 @@ arquivo = ""
 def signal_handler(sig, frame):
         print('You pressed Ctrl+C!')
 	os.system("rm resultados/%s_enoque.out" % arquivo)
+	os.system("rm resultados/%s_mauro.out" % arquivo)
         sys.exit(0)
 
 
@@ -113,9 +114,11 @@ for inst in instancias:
 		os.system("./max-kplex 3600 2 entradas/%s.clq > resultados/%s_enoque.out " % (inst,inst) )
 		signal.signal(signal.SIGINT, signal_handler)
 		signal.pause()
-	#if not os.path.isfile("resultados/%s_mauro.clq" % inst):
-		#print ("./RDPLEX 3600 2 entradas/%s.clq > resultados/%s_mauro.out" % (inst,inst))			
-		#os.system("./max-kplex 3600 2 entradas/%s.clq > resultados/%s_mauro.out " % (inst,inst) )
+	if not os.path.isfile("resultados/%s_mauro.out" % inst):
+		print ("./RDPLEX 3600 2 entradas/%s.clq > resultados/%s_mauro.out" % (inst,inst))			
+		os.system("./max-kplex 3600 2 entradas/%s.clq > resultados/%s_mauro.out " % (inst,inst) )
+		signal.signal(signal.SIGINT, signal_handler)
+		signal.pause()
 
 
 	
